@@ -1,0 +1,76 @@
+This is the Debian Linux prepackaged version of Figlet, a program for doing
+things
+ _ _ _          _   _     _
+| (_) | _____  | |_| |__ (_)___
+| | | |/ / _ \ | __| '_ \| / __|
+| | |   <  __/ | |_| | | | \__ \_
+|_|_|_|\_\___|  \__|_| |_|_|___(_)
+
+This package was originally put together by Robert Leslie <rob@mars.org>,
+and the maintained Martin Schulze <joey@debian.org>. Now it's maintained by 
+Francesco Tapparo <cesco@debian.org> with sources obtained from:
+  ftp://ftp.nicoh.com/pub/figlet/program/unix/figlet22.tar.gz
+
+  figlet (c) 1991, 1993, 1994 Glenn Chappell and Ian Chai
+  Internet: <ggc@uiuc.edu> and <chai@uiuc.edu>
+  FIGlet Copyright 1996, 1997 John Cowan^M
+  Portions written by Paul Burton^
+  figlet, along with the various figlet fonts and documentation, may be
+    freely copied and distributed.
+
+/*
+ * crc.c - CRC calculation routine
+ *
+ * Version 1.0
+ *
+ * Copyright (c) 1995, Edward B. Hamrick
+ *
+ * Permission to use, copy, modify, distribute, and sell this software and
+ * its documentation for any purpose is hereby granted without fee, provided
+ * that
+ *
+ * (i)  the above copyright notice and the text in this "C" comment block
+ *      appear in all copies of the software and related documentation, and
+ *
+ * (ii) any modifications to this source file must be sent, via e-mail
+ *      to the copyright owner (currently hamrick@primenet.com) within
+ *      30 days of such modification.
+ *
+ * THE SOFTWARE IS PROVIDED "AS-IS" AND WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY
+ * WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * IN NO EVENT SHALL EDWARD B. HAMRICK BE LIABLE FOR ANY SPECIAL, INCIDENTAL,
+ * INDIRECT OR CONSEQUENTIAL DAMAGES OF ANY KIND, OR ANY DAMAGES WHATSOEVER
+ * RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER OR NOT ADVISED OF
+ * THE POSSIBILITY OF DAMAGE, AND ON ANY THEORY OF LIABILITY, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+In addition, the authors have approved the following copyright
+addendum, according to Robert Leslie:
+
+  This program may be sold as a component of the Debian Linux
+  distribution or a Linux distribution derived from the Debian
+  Linux distribution. If it is distributed in binary form, the
+  source code must be included in the distribution as well.
+
+You may wish to visit the following Figlet WWW sites:
+
+  http://st-www.cs.uiuc.edu/users/chai/figlet.html
+  http://www.math.uiuc.edu/~chappell/figlet/
+
+The official FIGlet web page: http://st-www.cs.uiuc.edu/~chai/figlet.html
+
+If you like FIGlet (hey, even if you *hate* FIGlet), please send an
+e-mail message to <figlet@uiuc.edu>.
+
+We run an e-mail list dedicated to FIGlet software and font
+announcements, as well as general discussion about FIGlet.  If you
+would like to be on this list, send e-mail to listserv@vmd.cso.uiuc.edu
+with the message body
+        subscribe figlet-l YOUR NAME
+where YOUR NAME should be replaced with your name.  For those who don't
+want to be bothered with the discussions, the list can be configured so
+that you only see software update notices, or only software and font
+announcements.

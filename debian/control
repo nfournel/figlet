@@ -1,0 +1,20 @@
+Source: figlet
+Maintainer: Francesco Tapparo <cesco@debian.org>
+Section: misc
+Priority: optional
+Standards-Version: 3.5.9.0
+Build-Depends: debhelper (>= 4.0.0)
+
+Package: figlet
+Architecture: any
+Depends: ${shlibs:Depends}
+Replaces: figfonts
+Conflicts: figfonts (<= 2.2-3), figfonts-cjk (<= 2.2-3)
+Section: misc
+Priority: optional
+Description: Frank, Ian & Glenn's Letters
+ Figlet is a program that creates large characters out of ordinary screen
+ characters.  It can create characters in many different styles and can
+ kern and "smush" these characters together in various ways.  Figlet
+ output is generally reminiscent of the sort of "signatures" many people
+ like to put at the end of e-mail and Usenet messages.

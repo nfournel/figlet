@@ -1,0 +1,81 @@
+#!/usr/bin/make -f
+# adapted from a sample in the  the debhelper
+# package
+# GNU copyright 1997 to 1999 by Joey Hess.
+# GNU copyright 2000 to 2003 by Francesco Tapparo
+
+# Uncomment this to turn on verbose mode.
+export DH_VERBOSE=1
+export DH_COMPAT=4
+export DH_OPTIONS= -p figlet 
+
+export installbin = install -g root -o root -m 755 
+export installdoc = install -g root -o root -m 644 
+
+build: build-stamp
+build-stamp:
+	dh_testdir
+	-mkdir debian/trash
+
+	# Add here commands to compile the package.
+	$(MAKE) DEFAULTFONTDIR="/usr/share/figlet" DESTDIR="/usr/bin"
+
+	touch stamp-build
+
+clean:
+	dh_testdir
+	rm -f build-stamp
+	rm -f install-stamp
+	-rm -rf debian/trash
+
+	# Add here commands to clean up after the build process.
+	-$(MAKE) clean
+	find . -name '*~' -exec rm {} \;
+	-rm -f stamp-build
+	-rm -f debian/figlet.elc
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+	# Add here commands to install the package into debian/tmp.
+	$(MAKE) install DESTDIR=debian/figlet/usr/bin \
+	                DEFAULTFONTDIR=debian/figlet/usr/share/figlet \
+	                MANDIR=debian/trash
+	$(installbin) -d debian/figlet/usr/share/emacs/site-lisp
+	$(installdoc) debian/figlet.el \
+	              debian/figlet/usr/share/emacs/site-lisp/figlet.el
+
+	$(installbin) -d debian/figlet/usr/share/emacs/site-lisp
+	$(installdoc) debian/figlet.el debian/figlet/usr/share/emacs/site-lisp
+
+	touch install-stamp
+
+# Build architecture-independent files here.
+binary-indep: build install
+# We have nothing to do by default.
+
+# Build architecture-dependent files here.
+binary-arch: build install
+#	dh_testversion
+	dh_testdir
+	dh_testroot
+	dh_installdocs
+#	dh_installemacsen
+	dh_installman
+#	dh_installinfo
+	dh_installchangelogs CHANGES
+	dh_link
+	dh_strip
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install

@@ -1,0 +1,113 @@
+figlet (2.2.1-1) unstable; urgency=low
+
+  * new upstream release closes: Bug#175460
+  * removed obsolete files debian/readme and debian/changes
+  * switched to use debian/manpages
+  * updated chkfont manpage closes: Bug#93311
+  * updated figlist manpage closes: Bug#93312
+  * updated showfigfonts manpage closes: Bug#93313
+  * added a note about the existence of figfonts closes:Bug#185967
+  * set debhelper compatibility mode to 4
+  * changed the build dependency to require debhelper (>= 4)
+  * now standard version 3.5.9.0 compatible
+
+ -- Francesco Tapparo <cesco@debian.org>  Sat,  5 Apr 2003 21:48:42 +0200
+
+figlet (2.2-11) unstable; urgency=low
+
+  * added the manpages of chkfont, figlist and showfigfonts: thanks
+    Jonathon Abbottjed rules
+
+ -- Francesco Tapparo <cesco@debian.org>  Fri, 13 Apr 2001 11:05:54 +0200
+
+figlet (2.2-10) unstable; urgency=low
+
+  * figlet.el was misnamed (this close bug #75721)
+  * figlet now use an improved version of figlet.el (thanks to James
+    LewisMossls)
+  * renamed /usr/share/doc/figlet/changes.txt.gz to
+    /usr/share/doc/figlet/changelog.gz for a better debian policy
+    guidelines adherence
+  * veridied adherence to debian policy 3.2.1.0
+
+ -- Francesco Tapparo <cesco@debian.org>  Sun,  5 Nov 2000 14:31:58 +0100
+
+figlet (2.2-9) unstable; urgency=low
+
+  * converted to debhelper
+  * some tweaks to the upstream Makefile: now it creates $(MANDIR) and it uses
+    install -d and not mkdir, and it creates the /usr/bin directory
+  * renamed changes to changes.txt
+  * moved the dynamically created changes.txt and readme.txt to the
+    debian subdir
+  * package moved to FHS
+  * added showfigfonts, figlist and chkfont to the distribution
+  * recompiled with glibc-2.1 (it was 2.0)
+  * verified compliance to policy 3.0.0.0
+  * changed the Replaces field from figfont (<< 2.2) to figfont
+  * added a Conflicts field against old version of figfonts and
+    figfonts-cjk
+
+ -- Francesco Tapparo <cesco@debian.org>  Mon, 11 Oct 1999 14:44:39 +0200
+
+figlet (2.2-8) unstable; urgency=low
+
+  * updated my email address
+  * the build process is more friendly to the cross compilers now: this close 
+    bug #32189
+
+ -- Francesco Tapparo <cesco@debian.org>  Sun, 25 Apr 1999 21:54:08 +0200
+
+figlet (2.2-7) frozen unstable; urgency=low
+
+  * changed distribution to frozen/unstable
+
+ -- Francesco Tapparo <f.tapparo@vi.nettuno.it>  Sun, 26 Apr 1998 14:09:35 +0200
+
+figlet (2.2-6) unstable; urgency=low
+
+  * move figlet.el to /usr/share/emacs/site-lisp: this solve bug #21219
+
+ -- Francesco Tapparo <f.tapparo@vi.nettuno.it>  Tue, 21 Apr 1998 14:39:15 +0200
+
+figlet (2.2-5) unstable; urgency=low
+
+  * added the emacs helper figlet.el
+  * stripped the binaries (this would resolve the bug #15722)
+
+
+ -- Francesco Tapparo <f.tapparo@vi.nettuno.it>  Sat, 13 Dec 1997 21:02:37 +0100
+
+figlet (2.2-4) unstable; urgency=low
+
+  * moved back to the main distribution
+
+ -- Francesco Tapparo <f.tapparo@vi.nettuno.it>  Sun, 23 Nov 1997 13:42:09 +0100
+
+figlet (2.2-3) unstable; urgency=low
+
+  * now the upstream changelog file is gzipped
+  * verified adherence to debian policy 2.3.0.0
+  * removed bashisms (veryfied with ash and pdksh)
+  * now figlet don't use zipped fonts (for policy problems)
+  * added Replaces figfonts (<< 2.2). This solve bug #13343
+
+ -- Francesco Tapparo <f.tapparo@vi.nettuno.it>  Sat, 25 Oct 1997 14:42:44 +0200
+
+figlet (2.2-2) unstable; urgency=low
+
+  * executable permission to showfigfonts and figlist
+  * used compressed fonts
+  * new maintainer
+
+ -- Francesco Tapparo <f.tapparo@vi.nettuno.it>  Sat, 20 Sep 1997 19:14:27  +0200
+
+figlet (2.2-1) unstable; urgency=low
+
+  * New upstream source
+  * New maintaier
+  * New Standards version (Bug#9466)
+  * New section (non-free)
+
+ -- Martin Schulze <joey@finlandia.infodrom.north.de>  Wed,  3 Sep 1997 21:20:58 +0200
+

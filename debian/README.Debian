@@ -1,0 +1,7 @@
+If you need more fonts for figlet, you can install figfonts, a package
+coming with several fonts supporting also cirillic languages.
+Unfortunately figfonts is not free, so it cannot be part of Debian;
+but you can fetch it from the ftp servers anyway, in the non-free
+section.
+
+Francesco Tapparo
