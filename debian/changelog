@@ -1,3 +1,29 @@
+figlet (2.2.1-4) unstable; urgency=high
+
+  * debian/control: forgot to change the binary package's Section from misc to
+    non-free/text.  Really uploading to non-free this time.
+
+ -- Carlos Laviola <claviola@debian.org>  Mon,  1 Nov 2004 15:14:52 -0300
+
+figlet (2.2.1-3) unstable; urgency=high
+
+  * debian/control: changed Section from misc to non-free/text while the
+    problems that land figlet in non-free, as brought up in bug #274950 are
+    being fixed.  (Closes: #274950)
+
+ -- Carlos Laviola <claviola@debian.org>  Sat,  9 Oct 2004 04:01:57 -0300
+
+figlet (2.2.1-2) unstable; urgency=low
+
+  * New maintainer.
+  * Bumped Standards-Version to 3.6.1.1.
+  * Nothing's actually installed in /usr/doc.  (Closes: #190019)
+  * figlet.6: Replaced Ian Chai's e-mail address with the one he used
+    to subscribe to figlet's mailing list.  (Closes: #273063)
+  * debian/control: figlet now Suggests: figfonts{-cjk}.  (Closes: #271474)
+
+ -- Carlos Laviola <claviola@debian.org>  Sat,  2 Oct 2004 01:36:08 -0300
+
 figlet (2.2.1-1) unstable; urgency=low
 
   * new upstream release closes: Bug#175460

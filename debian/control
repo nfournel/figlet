@@ -1,16 +1,17 @@
 Source: figlet
-Maintainer: Francesco Tapparo <cesco@debian.org>
-Section: misc
+Maintainer: Carlos Laviola <claviola@debian.org>
+Section: non-free/text
 Priority: optional
-Standards-Version: 3.5.9.0
+Standards-Version: 3.6.1.1
 Build-Depends: debhelper (>= 4.0.0)
 
 Package: figlet
 Architecture: any
 Depends: ${shlibs:Depends}
 Replaces: figfonts
+Suggests: figfonts, figfonts-cjk
 Conflicts: figfonts (<= 2.2-3), figfonts-cjk (<= 2.2-3)
-Section: misc
+Section: non-free/text
 Priority: optional
 Description: Frank, Ian & Glenn's Letters
  Figlet is a program that creates large characters out of ordinary screen
