@@ -1,6 +1,9 @@
 #!/bin/sh
 
-#DEBHELPER#
+if [ "$1" = remove ]; then
+  # Remove alternative for figlet
+  update-alternatives --remove figlet /usr/bin/figlet-figlet
+fi
 
 #DEBHELPER#
 

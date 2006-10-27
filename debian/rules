@@ -40,11 +40,13 @@ install: build
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
+	dh_installexamples debian/examples/moolets
 
 	# Add here commands to install the package into debian/tmp.
 	$(MAKE) install DESTDIR=debian/figlet/usr/bin \
 	                DEFAULTFONTDIR=debian/figlet/usr/share/figlet \
 	                MANDIR=debian/trash
+	mv debian/figlet/usr/bin/figlet debian/figlet/usr/bin/figlet-figlet
 	$(installbin) -d debian/figlet/usr/share/emacs/site-lisp
 	$(installdoc) debian/figlet.el \
 	              debian/figlet/usr/share/emacs/site-lisp/figlet.el
