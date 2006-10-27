@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Prints "Moo" using every font installed on /usr/share/figlet
+# Written by Sandro Tosi <matrixhasu@gmail.com>
+
+> /tmp/moolets
+
+for file in /usr/share/figlet/*.flf ; do 
+  FONT=`basename $file | sed 's|\(.*\)\.\(.*\)|\1|'`
+
+  echo -e "Font: $FONT \n" >> /tmp/moolets
+  figlet -f $FONT Moo >> /tmp/moolets
+  echo -e "\n\n" >> /tmp/moolets
+done

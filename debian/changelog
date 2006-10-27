@@ -1,3 +1,16 @@
+figlet (2.2.2-1) unstable; urgency=low
+
+  * New upstream release.  (Closes: #388101)
+    * Does not suggest figlet-fonts.  (Closes: #376176)
+    * chkfont.c: patched to fix nasty core dumps when attempting to read files
+      that are unexpected.  Thanks to Kenneth Davies.  (Closes: #300735)
+    * Include Sandro Tosi's font demonstration script.  (Closes: #388099)
+  * /usr/bin/figlet is an alternative to /usr/bin/figlet-figlet now.  This
+    change was made to pave the way for free figlet clones.  Thanks to Sam
+    Hocevar for the patch.  (Closes: #390549)
+
+ -- Carlos Laviola <claviola@debian.org>  Thu, 26 Oct 2006 23:01:19 -0300
+
 figlet (2.2.1-4) unstable; urgency=high
 
   * debian/control: forgot to change the binary package's Section from misc to

@@ -1,6 +1,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#ifdef __STDC__
+#include <stdlib.h>
+#endif
+
+#ifndef EXIT_SUCCESS
+#define EXIT_SUCCESS (0)
+#define EXIT_FAILURE (1)
+#endif
 
 #define DATE "20 Feb 1996"
 #define VERSION "2.2"
@@ -19,18 +27,24 @@
    full o' bugs ....
 */
 
+/* Squashed some warnings and a double free(): Kenneth Davies Mar 14 2005 */
+
 /* #define CHECKBLANKS */
 #define FONTFILESUFFIX ".flf"
 #define FONTFILEMAGICNUMBER "flf2"
-char posshardblanks[9] = { '!', '@', '#', '$', '%', '&', '*', 0x7f, 0 };
+
+const char
+posshardblanks[9] = { '!', '@', '#', '$', '%', '&', '*', '\177', '\0' };
 
 char *myname,*fontfilename;
 FILE *fontfile;
 char hardblank;
-int charheight,upheight,maxlen=0,old_layout;
+int charheight,upheight,old_layout;
 int spectagcnt;
-char *fileline;
-int maxlinelength=0,currline;
+char *fileline = NULL;
+int currline;
+int maxlinelength=0;
+int maxlen=0;
 int ec,wc;
 
 int incon_endmarkwarn,endmark_countwarn,nonincrwarn;
@@ -38,8 +52,8 @@ int bigcodetagwarn,deutschcodetagwarn,asciicodetagwarn;
 int codetagcnt;
 int gone;
 
-void weregone(really)
-int really;
+void 
+weregone(int really)
 {
 if (!really && 2*ec+wc<=40) {
   return;
@@ -60,23 +74,23 @@ printf("------------------------------------------------------------------------
 gone=1;
 }
 
-char *my_alloc(size)
-int size;
+char *
+my_alloc(size_t size)
 {
 char *ptr;
 
 ptr=(char *)malloc(size);
 if (ptr==NULL) {
   fprintf(stderr,"%s: Out of memory\n",myname);
+  exit(EXIT_FAILURE); /* Bail out now instead of not returning anything */
   }
 else {
   return(ptr);
   }
 }
 
-int badsuffix(path,suffix)
-char *path;
-char *suffix;
+int
+badsuffix(char *path, char *suffix)
 {
   char ucsuffix[10];
   char *s;
@@ -93,22 +107,30 @@ char *suffix;
   return 1;
 }
 
-void usageerr()
+void
+usageerr()
 {
 fprintf(stderr,"chkfont by Glenn Chappell <ggc@uiuc.edu>\n");
 fprintf(stderr,"Version: %s, date: %s\n",VERSION,DATE);
 fprintf(stderr,"Checks figlet 2.0/2.1 font files for format errors.\n");
 fprintf(stderr,"(Does not modify font files.)\n");
 fprintf(stderr,"Usage: %s fontfile ...\n",myname);
-exit(1);
+exit(EXIT_FAILURE);
 }
 
 
-void readchar()
+void
+readchar()
 {
-int i,expected_width,k,len,newlen,diff,l;
+int i,expected_width,k,diff,l;
 char endmark,expected_endmark;
 int leadblanks,minleadblanks,trailblanks,mintrailblanks;
+int len, newlen; 
+
+ minleadblanks=0;
+ expected_endmark='\0';
+ expected_width=0;
+ mintrailblanks=0;
 
 for (i=0;i<charheight;i++) {
   fgets(fileline,maxlen+1000,fontfile);
@@ -202,7 +224,8 @@ if (minleadblanks+mintrailblanks>0 && old_layout>=0) {
 }
 
 
-void checkit()
+void
+checkit()
 {
 int i,k,cmtcount,numsread,ffrighttoleft,have_layout,layout;
 char magicnum[5],cha;
@@ -223,7 +246,7 @@ else {
   fontfile=fopen(fontfilename,"r");
   if (fontfile == NULL) {
     fprintf(stderr,"%s: Could not open file '%s'\n",myname,fontfilename);
-    exit(1);
+    exit(EXIT_FAILURE);
     }
   }
 
@@ -258,6 +281,7 @@ numsread=sscanf(fileline,"%c %d %d %d %d %d %d %d %d",
   &hardblank,&charheight,&upheight,&maxlen,&old_layout,&cmtcount,
   &ffrighttoleft,&layout,&spectagcnt);
 free(fileline);
+fileline = NULL;
 if (numsread<7) {
   ffrighttoleft=0;
   }
@@ -436,9 +460,8 @@ weregone(1); if (gone) return;
 }
 
 
-int main(argc,argv)
-int argc;
-char *argv[];
+int
+main(int argc, char *argv[])
 {
 int arg;
 

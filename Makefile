@@ -1,4 +1,4 @@
-# Makefile for figlet version 2.2.1 (13 July 2002) 
+# Makefile for figlet version 2.2.2 (05 July 2005) 
 # adapted from Makefile for figlet version 2.2 (15 Oct 1996)
 # Copyright 1993, 1994,1995 Glenn Chappell and Ian Chai
 # Copyright 1996, 1997, 1998, 1999, 2000, 2001 John Cowan
@@ -54,9 +54,9 @@ clean:
 install: figlet chkfont
 	mkdir -p $(DEFAULTFONTDIR)
 	cp figlet $(DESTDIR)
+	cp figlet.6 $(MANDIR)
 	cp chkfont $(DESTDIR)
 	cp figlist $(DESTDIR)
 	cp showfigfonts $(DESTDIR)
 	cp fonts/*.flf $(DEFAULTFONTDIR)
 	cp fonts/*.flc $(DEFAULTFONTDIR)
-	cp figlet.6 $(MANDIR)
