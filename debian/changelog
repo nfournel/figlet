@@ -1,3 +1,11 @@
+figlet (2.2.2-1ubuntu1) hardy; urgency=low
+
+  * Removed Suggests field from debian/control, closes LP: #133367
+  * Modify Maintainer value to match the DebianMaintainerField
+    specification.
+
+ -- Miroslav Sabljic <civija@ubuntu-hr.org>  Mon, 17 Mar 2008 15:07:19 +0100
+
 figlet (2.2.2-1) unstable; urgency=low
 
   * New upstream release.  (Closes: #388101)
