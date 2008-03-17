@@ -1,5 +1,6 @@
 Source: figlet
-Maintainer: Carlos Laviola <claviola@debian.org>
+Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
+XSBC-Original-Maintainer: Carlos Laviola <claviola@debian.org>
 Section: non-free/text
 Priority: optional
 Standards-Version: 3.6.1.1
@@ -9,7 +10,6 @@ Package: figlet
 Architecture: any
 Depends: ${shlibs:Depends}
 Replaces: figfonts
-Suggests: figfonts, figfonts-cjk
 Conflicts: figfonts (<= 2.2-3), figfonts-cjk (<= 2.2-3)
 Section: non-free/text
 Priority: optional
