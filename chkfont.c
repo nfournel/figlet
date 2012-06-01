@@ -5,11 +5,6 @@
 #include <stdlib.h>
 #endif
 
-#ifndef EXIT_SUCCESS
-#define EXIT_SUCCESS (0)
-#define EXIT_FAILURE (1)
-#endif
-
 #define DATE "20 Feb 1996"
 #define VERSION "2.2"
 
@@ -27,24 +22,18 @@
    full o' bugs ....
 */
 
-/* Squashed some warnings and a double free(): Kenneth Davies Mar 14 2005 */
-
 /* #define CHECKBLANKS */
 #define FONTFILESUFFIX ".flf"
 #define FONTFILEMAGICNUMBER "flf2"
-
-const char
-posshardblanks[9] = { '!', '@', '#', '$', '%', '&', '*', '\177', '\0' };
+char posshardblanks[9] = { '!', '@', '#', '$', '%', '&', '*', 0x7f, 0 };
 
 char *myname,*fontfilename;
 FILE *fontfile;
 char hardblank;
-int charheight,upheight,old_layout;
+int charheight,upheight,maxlen=0,old_layout;
 int spectagcnt;
-char *fileline = NULL;
-int currline;
-int maxlinelength=0;
-int maxlen=0;
+char *fileline;
+int maxlinelength=0,currline;
 int ec,wc;
 
 int incon_endmarkwarn,endmark_countwarn,nonincrwarn;
@@ -52,8 +41,8 @@ int bigcodetagwarn,deutschcodetagwarn,asciicodetagwarn;
 int codetagcnt;
 int gone;
 
-void 
-weregone(int really)
+void weregone(really)
+int really;
 {
 if (!really && 2*ec+wc<=40) {
   return;
@@ -74,23 +63,22 @@ printf("------------------------------------------------------------------------
 gone=1;
 }
 
-char *
-my_alloc(size_t size)
+char *my_alloc(size)
+int size;
 {
 char *ptr;
 
 ptr=(char *)malloc(size);
 if (ptr==NULL) {
   fprintf(stderr,"%s: Out of memory\n",myname);
-  exit(EXIT_FAILURE); /* Bail out now instead of not returning anything */
+  exit(1);
   }
-else {
-  return(ptr);
-  }
+return(ptr);
 }
 
-int
-badsuffix(char *path, char *suffix)
+int badsuffix(path,suffix)
+char *path;
+char *suffix;
 {
   char ucsuffix[10];
   char *s;
@@ -107,33 +95,32 @@ badsuffix(char *path, char *suffix)
   return 1;
 }
 
-void
-usageerr()
+void usageerr()
 {
 fprintf(stderr,"chkfont by Glenn Chappell <ggc@uiuc.edu>\n");
 fprintf(stderr,"Version: %s, date: %s\n",VERSION,DATE);
 fprintf(stderr,"Checks figlet 2.0/2.1 font files for format errors.\n");
 fprintf(stderr,"(Does not modify font files.)\n");
 fprintf(stderr,"Usage: %s fontfile ...\n",myname);
-exit(EXIT_FAILURE);
+exit(1);
 }
 
-
-void
-readchar()
+void readchar()
 {
-int i,expected_width,k,diff,l;
+int i,expected_width,k,len,newlen,diff,l;
 char endmark,expected_endmark;
 int leadblanks,minleadblanks,trailblanks,mintrailblanks;
-int len, newlen; 
+char *ret;
 
- minleadblanks=0;
- expected_endmark='\0';
- expected_width=0;
- mintrailblanks=0;
-
+expected_width = expected_endmark = 0;	/* prevent compiler warning */
 for (i=0;i<charheight;i++) {
-  fgets(fileline,maxlen+1000,fontfile);
+  ret = fgets(fileline,maxlen+1000,fontfile);
+  if (ret == NULL) {
+    printf("%s: ERROR (fatal)- Unexpected read error after line %d.\n",
+      fontfilename,currline);
+    ec++;
+    weregone(1); if (gone) return;
+    }
   if (feof(fontfile)) {
     printf("%s: ERROR (fatal)- Unexpected end of file after line %d.\n",
       fontfilename,currline);
@@ -224,8 +211,7 @@ if (minleadblanks+mintrailblanks>0 && old_layout>=0) {
 }
 
 
-void
-checkit()
+void checkit()
 {
 int i,k,cmtcount,numsread,ffrighttoleft,have_layout,layout;
 char magicnum[5],cha;
@@ -246,7 +232,7 @@ else {
   fontfile=fopen(fontfilename,"r");
   if (fontfile == NULL) {
     fprintf(stderr,"%s: Could not open file '%s'\n",myname,fontfilename);
-    exit(EXIT_FAILURE);
+    exit(1);
     }
   }
 
@@ -258,7 +244,12 @@ if (fontfile!=stdin) {
     weregone(0); if (gone) return;
     }
   }
-fscanf(fontfile,"%4s",magicnum);
+numsread=fscanf(fontfile,"%4s",magicnum);
+if (numsread == EOF) {
+  printf("%s: ERROR- can't read magic number.\n",fontfilename);
+  ec++;
+  weregone(0); if (gone) return;
+  }
 if (strcmp(magicnum,FONTFILEMAGICNUMBER)) {
   printf("%s: ERROR- Incorrect magic number.\n",fontfilename);
   ec++;
@@ -460,8 +451,9 @@ weregone(1); if (gone) return;
 }
 
 
-int
-main(int argc, char *argv[])
+int main(argc,argv)
+int argc;
+char *argv[];
 {
 int arg;
 
@@ -480,5 +472,5 @@ for (arg=1;arg<argc;arg++) {
   checkit();
   if (fileline!=NULL) free(fileline);
   }
-exit(0);
+return 0;
 }

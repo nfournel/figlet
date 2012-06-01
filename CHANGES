@@ -1,3 +1,86 @@
+Changes in FIGlet 2.2.5
+-----------------------
+
+FIGlet 2.2.5 is a revision of FIGlet 2.2.4 containing updated andproperly
+licensed ISO8859 map files.  The full list of changes is:
+
+o	Add regression tests for uskata and jis0201 control files
+
+o	Properly escape minus signs in figlist(6) man page (Jonathan
+	McCrohan)
+
+o	Fix chkfont coredump on invalid input (Kenneth Davies and
+	Jonathan McCrohan)
+
+o	Update ISO8859 map files to fix licensing issue raised in Debian
+	bugs 673096 and 674844
+
+o	Re-add missing figmagic and getopt.c files which were left out
+	of releases 2.2.3 and 2.2.4
+
+o	Fix output of test script in MacOS X
+
+These changes were made by Claudio Matsuoka <cmatsuoka@gmail.com>
+31 May 2012
+
+Changes in FIGlet 2.2.4
+-----------------------
+
+FIGlet 2.2.4 is a revision of FIGlet 2.2.3 featuring bugfixes and support
+to tlf2 fonts.  The full list of changes is:
+
+o	Add support to Sam Hocevar's TOIlet TLF fonts containing UTF-8
+	encoded Unicode characters.
+
+o	Add infocode 5 to list supported font formats
+
+o	Fix rendering error caused by the previous attempt to fix invalid
+	memory accesses when smushing at start of line
+
+o	New environment variable FIGLET_FONTDIR can be used to specify
+	the path to search for fonts
+
+o	Add regression tests
+
+These changes were made by Claudio Matsuoka <cmatsuoka@gmail.com>
+26 January 2011
+
+Changes in FIGlet 2.2.3
+-----------------------
+
+FIGlet 2.2.3 is a revision of FIGlet 2.2.2 featuring minor bugfixes and
+important licensing changes in the zipio files.  The full list of
+changes is:
+
+o	License changed from "Academic Free License" to "New BSD License"
+	(3-clause) as agreed by FIGlet authors
+
+o	New JIS X 0201 control file (Micah Cowan)
+
+o	Fix behavior of JIS0201 SHIFT-OUT and SHIFT-IN that were previouly
+	inverted (Micah Cowan)
+
+o	Fix memory violation when smushing at line start
+
+o	Fix handling of memory allocation errors
+
+o	Relicense Ed Hamrick zipio under the MIT license. This should
+	eliminate any concerns about redistribution of FIGlet as libre
+	software.
+
+o	Update Makefile to meet modern standards in variable naming, using
+	BINDIR as the pathname for binary files and reservind DESTDIR
+	as the extra prefix commonly used in package building.
+
+o	Add a Turbo C makefile, just because I had the compiler. (this
+	also tests portability to old compilers and foreign platforms)
+
+o	Add Jonathon Abbott's man pages for figlist, showfigfonts and
+	chkfont originally contributed to the Debian Project
+
+These changes were made by Claudio Matsuoka <cmatsuoka@gmail.com>
+12 January 2011
+
 Changes in FIGlet 2.2.2
 -----------------------
 

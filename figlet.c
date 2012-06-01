@@ -3,16 +3,17 @@
   FIGlet Copyright 1991, 1993, 1994 Glenn Chappell and Ian Chai
   FIGlet Copyright 1996, 1997, 1998, 1999, 2000, 2001 John Cowan
   FIGlet Copyright 2002 Christiaan Keet
+  FIGlet Copyright 2011, 2012 Claudio Matsuoka
   Portions written by Paul Burton and Christiaan Keet
   Internet: <info@figlet.org>
   FIGlet, along with the various FIGlet fonts and documentation, is
-    copyrighted under the provisions of the Academic Free License 
+    copyrighted under the provisions of the New BSD License (3-clause)
     (as listed in the file "LICENSE" which is included in this package)
 ****************************************************************************/
 
-#define DATE "05 July 2005"
-#define VERSION "2.2.2"
-#define VERSION_INT 20202
+#define DATE "31 May 2012"
+#define VERSION "2.2.5"
+#define VERSION_INT 20205
 
 /* FIGlet (Frank, Ian & Glenn's Letters) */
 /* by Glenn Chappell */
@@ -36,6 +37,9 @@
    http://www.figlet.org/  */
 /* Release 2.2.2 by Christiaan Keet: License changed from "Artistic License"
    to "Academic Free License" as agreed by FIGlet authors. 05 July 2005 */
+/* Release 2.2.3 by Claudio Matsuoka, 12 Jan 2011: BSD license, fixes */
+/* Release 2.2.4 by Claudio Matsuoka, 26 Jan 2011: tlf2 font support */
+/* Release 2.2.5 by Claudio Matsuoka, 31 May 2012: flc licensing, minor fixes */
 
 /*---------------------------------------------------------------------------
   DEFAULTFONTDIR and DEFAULTFONTFILE should be defined in the Makefile.
@@ -59,10 +63,18 @@
 #endif
 #include <string.h>
 #include <ctype.h>
+#include <sys/stat.h>
 #include <fcntl.h>     /* Needed for get_columns */
 
 #ifdef unix
+#include <unistd.h>
 #include <sys/ioctl.h> /* Needed for get_columns */
+#endif
+
+#ifdef TLF_FONTS
+#include <wchar.h>
+#include <wctype.h>
+#include "utf8.h"
 #endif
 
 #include "zipio.h"     /* Package for reading compressed files */
@@ -81,6 +93,16 @@ Note: '/' also used in filename in get_columns(). */
 #define CONTROLFILEMAGICNUMBER "flc2"   /* no longer used in 2.2 */
 #define CSUFFIXLEN MYSTRLEN(CONTROLFILESUFFIX)
 #define DEFAULTCOLUMNS 80
+#define MAXLEN 255     /* Maximum character width */
+
+/* Add support for Sam Hocevar's TOIlet fonts */
+#ifdef TLF_FONTS
+#define TOILETFILESUFFIX ".tlf"
+#define TOILETFILEMAGICNUMBER "tlf2"
+#define TSUFFIXLEN MYSTRLEN(TOILETFILESUFFIX)
+
+int toiletfont;	/* true if font is a TOIlet TLF font */
+#endif
 
 
 /****************************************************************************
@@ -120,17 +142,31 @@ char **Myargv;
 
 ****************************************************************************/
 
+#ifdef TLF_FONTS
+typedef wchar_t outchr; /* "char" written to stdout */
+#define STRLEN(x) wcslen(x)
+#define STRCPY(x,y) wcscpy((x),(y))
+#define STRCAT(x,y) wcscat((x),(y))
+#define ISSPACE(x) iswspace(x)
+#else
+typedef char outchr; /* "char" written to stdout */
+#define STRLEN(x) MYSTRLEN(x)
+#define STRCPY(x,y) strcpy((x),(y))
+#define STRCAT(x,y) strcat((x),(y))
+#define ISSPACE(x) isspace(x)
+#endif
+
 typedef struct fc {
   inchr ord;
-  char **thechar;  /* Alloc'd char thechar[charheight][]; */
+  outchr **thechar;  /* Alloc'd char thechar[charheight][]; */
   struct fc *next;
   } fcharnode;
 
 fcharnode *fcharlist;
-char **currchar;
+outchr **currchar;
 int currcharwidth;
 int previouscharwidth;
-char **outputline;    /* Alloc'd char outputline[charheight][outlinelenlimit+1]; */
+outchr **outputline;   /* Alloc'd char outputline[charheight][outlinelenlimit+1]; */
 int outlinelen;
 
 
@@ -361,6 +397,7 @@ ZFILE *fp;
   return (c==EOF) ? NULL : line;
 }
 
+
 /****************************************************************************
 
   usageerr
@@ -395,8 +432,8 @@ int infonum;
 {
   switch (infonum) {
     case 0: /* Copyright message */
-      printf("FIGlet Copyright 1991-2002 Glenn Chappell, Ian Chai, ");
-      printf("John Cowan, Christiaan Keet\n");
+      printf("FIGlet Copyright (C) 1991-2012 Glenn Chappell, Ian Chai, ");
+      printf("John Cowan,\nChristiaan Keet and Claudio Matsuoka\n");
       printf("Internet: <info@figlet.org> ");
       printf("Version: %s, date: %s\n\n",VERSION,DATE);
       printf("FIGlet, along with the various FIGlet fonts");
@@ -419,6 +456,13 @@ int infonum;
       break;
     case 4: /* Outputwidth */
       printf("%d\n",outputwidth);
+      break;
+    case 5: /* Font formats */
+      printf("%s", FONTFILEMAGICNUMBER);
+#ifdef TLF_FONTS
+      printf(" %s", TOILETFILEMAGICNUMBER);
+#endif
+      printf("\n");
     }
 }
 
@@ -642,6 +686,48 @@ ZFILE *controlfile;
 
 /****************************************************************************
 
+  FIGopen
+
+  Given a FIGlet font or control file name and suffix, return the file
+  or NULL if not found
+
+****************************************************************************/
+
+ZFILE *FIGopen(name,suffix)
+char *name;
+char *suffix;
+{
+  char *fontpath;
+  ZFILE *fontfile;
+  struct stat st;
+  int namelen;
+
+  namelen = MYSTRLEN(fontdirname);
+  fontpath = (char*)alloca(sizeof(char)*
+    (namelen+MYSTRLEN(name)+MYSTRLEN(suffix)+2));
+  fontfile = NULL;
+  if (!hasdirsep(name)) {  /* not a full path name */
+    strcpy(fontpath,fontdirname);
+    fontpath[namelen] = DIRSEP;
+    fontpath[namelen+1] = '\0';
+    strcat(fontpath,name);
+    strcat(fontpath,suffix);
+    if(stat(fontpath,&st)==0) goto ok;
+    }
+  /* just append suffix */
+  strcpy(fontpath,name);
+  strcat(fontpath,suffix);
+  if(stat(fontpath,&st)==0) goto ok;
+
+  return NULL;
+
+ok:
+  fontfile = Zopen(fontpath,"rb");
+  return fontfile;
+}
+
+/****************************************************************************
+
   readcontrol
 
   Allocates memory and reads in the given control file.
@@ -655,35 +741,16 @@ char *controlname;
   inchr firstch,lastch;
   char dashcheck;
   inchr offset;
-  char *controlpath,magicnum[5];
   int command;
   ZFILE *controlfile;
-  int namelen;
 
-  namelen = MYSTRLEN(fontdirname);
-  controlpath = (char*)myalloc(sizeof(char)
-    *(namelen+MYSTRLEN(controlname)+CSUFFIXLEN+2));
-  controlfile = NULL;
-  if (!hasdirsep(controlname)) {
-    strcpy(controlpath,fontdirname);
-    controlpath[namelen] = DIRSEP;
-    controlpath[namelen+1] = '\0';
-    strcat(controlpath,controlname);
-    strcat(controlpath,CONTROLFILESUFFIX);
-    controlfile = Zopen(controlpath,"rb");
-    }
+  controlfile = FIGopen(controlname,CONTROLFILESUFFIX);
+
   if (controlfile==NULL) {
-    strcpy(controlpath,controlname);
-    strcat(controlpath,CONTROLFILESUFFIX);
-    controlfile = Zopen(controlpath,"rb");
-    if (controlfile==NULL) {
-      fprintf(stderr,"%s: %s: Unable to open control file\n",myname,
-        controlpath);
-      exit(1);
-      }
+    fprintf(stderr,"%s: %s: Unable to open control file\n",myname,
+      controlname);
+    exit(1);
     }
-
-  free(controlpath);
 
   (*commandlistend) = (comnode*)myalloc(sizeof(comnode));
   (*commandlistend)->thecommand = 0; /* Begin with a freeze command */
@@ -847,8 +914,8 @@ void getparams()
   extern char *optarg;
   extern int optind;
   int c; /* "Should" be a char -- need int for "!= -1" test*/
-  int columns,firstfont,infoprint;
-  char *controlname;
+  int columns,infoprint;
+  char *controlname,*env;
 
   if ((myname = strrchr(Myargv[0],DIRSEP))!=NULL) {
     myname++;
@@ -857,12 +924,11 @@ void getparams()
     myname = Myargv[0];
     }
   fontdirname = DEFAULTFONTDIR;
-  firstfont = 1;
-  fontname = (char*)myalloc(sizeof(char)*(MYSTRLEN(DEFAULTFONTFILE)+1));
-  strcpy(fontname,DEFAULTFONTFILE); /* Some systems don't have strdup() */
-  if (suffixcmp(fontname,FONTFILESUFFIX)) {
-    fontname[MYSTRLEN(fontname)-FSUFFIXLEN]='\0';
+  env = getenv("FIGLET_FONTDIR");
+  if (env!=NULL) {
+    fontdirname = env;
     }
+  fontname = DEFAULTFONTFILE;
   cfilelist = NULL;
   cfilelistend = &cfilelist;
   commandlist = NULL;
@@ -974,14 +1040,15 @@ void getparams()
         fontdirname = optarg;
         break;
       case 'f':
-        if (firstfont) {
-          free(fontname);
-          firstfont = 0;
-          }
         fontname = optarg;
         if (suffixcmp(fontname,FONTFILESUFFIX)) {
           fontname[MYSTRLEN(fontname)-FSUFFIXLEN] = '\0';
           }
+#ifdef TLF_FONTS
+        else if (suffixcmp(fontname,TOILETFILESUFFIX)) {
+          fontname[MYSTRLEN(fontname)-TSUFFIXLEN] = '\0';
+          }
+#endif
         break;
       case 'C':
         controlname = optarg;
@@ -1059,38 +1126,43 @@ void clearline()
 
 ****************************************************************************/
 
-void readfontchar(file,theord,line,maxlen)
+void readfontchar(file,theord)
 ZFILE *file;
 inchr theord;
-char *line;
-int maxlen;
 {
   int row,k;
-  char endchar;
+  char templine[MAXLEN+1];
+  outchr endchar, outline[MAXLEN+1];
   fcharnode *fclsave;
 
   fclsave = fcharlist;
   fcharlist = (fcharnode*)myalloc(sizeof(fcharnode));
   fcharlist->ord = theord;
-  fcharlist->thechar = (char**)myalloc(sizeof(char*)*charheight);
+  fcharlist->thechar = (outchr**)myalloc(sizeof(outchr*)*charheight);
   fcharlist->next = fclsave;
+
   for (row=0;row<charheight;row++) {
-    if (myfgets(line,maxlen+1,file)==NULL) {
-      line[0] = '\0';
+    if (myfgets(templine,MAXLEN,file)==NULL) {
+      templine[0] = '\0';
       }
-    k = MYSTRLEN(line)-1;
-    while (k>=0 && isspace(line[k])) {
+#ifdef TLF_FONTS
+    utf8_to_wchar(templine,MAXLEN,outline,MAXLEN,0);
+#else
+    strcpy(outline,templine);
+#endif
+    k = STRLEN(outline)-1;
+    while (k>=0 && ISSPACE(outline[k])) {  /* remove trailing spaces */
       k--;
       }
     if (k>=0) {
-      endchar = line[k];
-      while (k>=0 ? line[k]==endchar : 0) {
+      endchar = outline[k];  /* remove endmarks */
+      while (k>=0 && outline[k]==endchar) {
         k--;
         }
       }
-    line[k+1] = '\0';
-    fcharlist->thechar[row] = (char*)myalloc(sizeof(char)*(k+2));
-    strcpy(fcharlist->thechar[row],line);
+    outline[k+1] = '\0';
+    fcharlist->thechar[row] = (outchr*)myalloc(sizeof(outchr)*(STRLEN(outline)+1));
+    STRCPY(fcharlist->thechar[row],outline);
     }
 }
 
@@ -1106,40 +1178,28 @@ int maxlen;
 
 void readfont()
 {
-#define MAXFIRSTLINELEN 1000
   int i,row,numsread;
   inchr theord;
   int maxlen,cmtlines,ffright2left;
   int smush,smush2;
-  char *fontpath,*fileline,magicnum[5];
+  char fileline[MAXLEN+1],magicnum[5];
   ZFILE *fontfile;
-  int namelen;
 
-  namelen = MYSTRLEN(fontdirname);
-  fontpath = (char*)myalloc(sizeof(char)
-    *(namelen+MYSTRLEN(fontname)+FSUFFIXLEN+2));
-  fontfile = NULL;
-  if (!hasdirsep(fontname)) {
-    strcpy(fontpath,fontdirname);
-    fontpath[namelen] = DIRSEP;
-    fontpath[namelen+1] = '\0';
-    strcat(fontpath,fontname);
-    strcat(fontpath,FONTFILESUFFIX);
-    fontfile = Zopen(fontpath,"rb");
-    }
+  fontfile = FIGopen(fontname,FONTFILESUFFIX);
+#ifdef TLF_FONTS
   if (fontfile==NULL) {
-    strcpy(fontpath,fontname);
-    strcat(fontpath,FONTFILESUFFIX);
-    fontfile = Zopen(fontpath,"rb");
-    if (fontfile==NULL) {
-      fprintf(stderr,"%s: %s: Unable to open font file\n",myname,fontpath);
-      exit(1);
-      }
+    fontfile = FIGopen(fontname,TOILETFILESUFFIX);
+    if(fontfile) toiletfont = 1;
+    }
+#endif
+
+  if (fontfile==NULL) {
+    fprintf(stderr,"%s: %s: Unable to open font file\n",myname,fontname);
+    exit(1);
     }
 
   readmagic(fontfile,magicnum);
-  fileline = (char*)myalloc(sizeof(char)*(MAXFIRSTLINELEN+1));
-  if (myfgets(fileline,MAXFIRSTLINELEN+1,fontfile)==NULL) {
+  if (myfgets(fileline,MAXLEN,fontfile)==NULL) {
     fileline[0] = '\0';
     }
   if (MYSTRLEN(fileline)>0 ? fileline[MYSTRLEN(fileline)-1]!='\n' : 0) {
@@ -1148,15 +1208,23 @@ void readfont()
   numsread = sscanf(fileline,"%*c%c %d %*d %d %d %d %d %d",
     &hardblank,&charheight,&maxlen,&smush,&cmtlines,
     &ffright2left,&smush2);
-  free(fileline);
+
+  if (maxlen > MAXLEN) {
+    fprintf(stderr,"%s: %s: character is too wide\n",myname,fontname);
+    exit(1);
+    }
+#ifdef TLF_FONTS
+  if ((!toiletfont && strcmp(magicnum,FONTFILEMAGICNUMBER)) ||
+      (toiletfont && strcmp(magicnum,TOILETFILEMAGICNUMBER)) || numsread<5) {
+#else
   if (strcmp(magicnum,FONTFILEMAGICNUMBER) || numsread<5) {
-    fprintf(stderr,"%s: %s: Not a FIGlet 2 font file\n",myname,fontpath);
+#endif
+    fprintf(stderr,"%s: %s: Not a FIGlet 2 font file\n",myname,fontname);
     exit(1);
     }
   for (i=1;i<=cmtlines;i++) {
     skiptoeol(fontfile);
     }
-  free(fontpath);
 
   if (numsread<6) {
     ffright2left = 0;
@@ -1191,28 +1259,26 @@ void readfont()
     justification = 2*right2left;
     }
 
-  fileline = (char*)myalloc(sizeof(char)*(maxlen+1));
   /* Allocate "missing" character */
   fcharlist = (fcharnode*)myalloc(sizeof(fcharnode));
   fcharlist->ord = 0;
-  fcharlist->thechar = (char**)myalloc(sizeof(char*)*charheight);
+  fcharlist->thechar = (outchr**)myalloc(sizeof(outchr*)*charheight);
   fcharlist->next = NULL;
   for (row=0;row<charheight;row++) {
-    fcharlist->thechar[row] = (char*)myalloc(sizeof(char));
+    fcharlist->thechar[row] = (outchr*)myalloc(sizeof(outchr));
     fcharlist->thechar[row][0] = '\0';
     }
   for (theord=' ';theord<='~';theord++) {
-    readfontchar(fontfile,theord,fileline,maxlen);
+    readfontchar(fontfile,theord);
     }
   for (theord=0;theord<=6;theord++) {
-    readfontchar(fontfile,deutsch[theord],fileline,maxlen);
+    readfontchar(fontfile,deutsch[theord]);
     }
   while (myfgets(fileline,maxlen+1,fontfile)==NULL?0:
     sscanf(fileline,"%li",&theord)==1) {
-    readfontchar(fontfile,theord,fileline,maxlen);
+    readfontchar(fontfile,theord);
     }
   Zclose(fontfile);
-  free(fileline);
 }
 
 
@@ -1229,9 +1295,9 @@ void linealloc()
 {
   int row; 
 
-  outputline = (char**)myalloc(sizeof(char*)*charheight);
+  outputline = (outchr**)myalloc(sizeof(outchr*)*charheight);
   for (row=0;row<charheight;row++) {
-    outputline[row] = (char*)myalloc(sizeof(char)*(outlinelenlimit+1));
+    outputline[row] = (outchr*)myalloc(sizeof(outchr)*(outlinelenlimit+1));
     }
   inchrlinelenlimit = outputwidth*4+100;
   inchrline = (inchr*)myalloc(sizeof(inchr)*(inchrlinelenlimit+1));
@@ -1264,7 +1330,7 @@ inchr c;
     currchar = charptr->thechar;
     }
   previouscharwidth = currcharwidth;
-  currcharwidth = MYSTRLEN(currchar[0]);
+  currcharwidth = STRLEN(currchar[0]);
 }
 
 
@@ -1287,8 +1353,8 @@ inchr c;
 
 ****************************************************************************/
 
-char smushem(lch,rch)
-char lch,rch;
+outchr smushem(lch,rch)
+outchr lch,rch;
 {
   if (lch==' ') return rch;
   if (rch==' ') return lch;
@@ -1376,7 +1442,7 @@ int smushamt()
 {
   int maxsmush,amt;
   int row,linebd,charbd;
-  char ch1,ch2;
+  outchr ch1,ch2;
 
   if ((smushmode & (SM_SMUSH | SM_KERN)) == 0) {
     return 0;
@@ -1384,13 +1450,13 @@ int smushamt()
   maxsmush = currcharwidth;
   for (row=0;row<charheight;row++) {
     if (right2left) {
-      for (charbd=MYSTRLEN(currchar[row]);
+      for (charbd=STRLEN(currchar[row]);
         ch1=currchar[row][charbd],(charbd>0&&(!ch1||ch1==' '));charbd--) ;
       for (linebd=0;ch2=outputline[row][linebd],ch2==' ';linebd++) ;
       amt = linebd+currcharwidth-1-charbd;
       }
     else {
-      for (linebd=MYSTRLEN(outputline[row]);
+      for (linebd=STRLEN(outputline[row]);
         ch1 = outputline[row][linebd],(linebd>0&&(!ch1||ch1==' '));linebd--) ;
       for (charbd=0;ch2=currchar[row][charbd],ch2==' ';charbd++) ;
       amt = charbd+outlinelen-1-linebd;
@@ -1423,8 +1489,8 @@ int smushamt()
 int addchar(c)
 inchr c;
 {
-  int smushamount,row,k;
-  char *templine;
+  int smushamount,row,k,column;
+  outchr *templine;
 
   getletter(c);
   smushamount = smushamt();
@@ -1433,27 +1499,31 @@ inchr c;
     return 0;
     }
 
-  templine = (char*)myalloc(sizeof(char)*(outlinelenlimit+1));
+  templine = (outchr*)myalloc(sizeof(outchr)*(outlinelenlimit+1));
   for (row=0;row<charheight;row++) {
     if (right2left) {
-      strcpy(templine,currchar[row]);
+      STRCPY(templine,currchar[row]);
       for (k=0;k<smushamount;k++) {
         templine[currcharwidth-smushamount+k] =
           smushem(templine[currcharwidth-smushamount+k],outputline[row][k]);
         }
-      strcat(templine,outputline[row]+smushamount);
-      strcpy(outputline[row],templine);
+      STRCAT(templine,outputline[row]+smushamount);
+      STRCPY(outputline[row],templine);
       }
     else {
       for (k=0;k<smushamount;k++) {
-        outputline[row][outlinelen-smushamount+k] =
-          smushem(outputline[row][outlinelen-smushamount+k],currchar[row][k]);
+	column = outlinelen-smushamount+k;
+	if (column < 0) {
+	  column = 0;
+	  }
+        outputline[row][column] =
+          smushem(outputline[row][column],currchar[row][k]);
         }
-      strcat(outputline[row],currchar[row]+smushamount);
+      STRCAT(outputline[row],currchar[row]+smushamount);
       }
     }
   free(templine);
-  outlinelen = MYSTRLEN(outputline[0]);
+  outlinelen = STRLEN(outputline[0]);
   inchrline[inchrlinelen++] = c;
   return 1;
 }
@@ -1473,11 +1543,16 @@ inchr c;
 ****************************************************************************/
 
 void putstring(string)
-char *string;
+outchr *string;
 {
   int i,len;
+  char c[10];
+#ifdef TLF_FONTS
+  size_t size;
+  wchar_t wc[2];
+#endif
 
-  len = MYSTRLEN(string);
+  len = STRLEN(string);
   if (outputwidth>1) {
     if (len>outputwidth-1) {
       len = outputwidth-1;
@@ -1489,7 +1564,20 @@ char *string;
       }
     }
   for (i=0;i<len;i++) {
+#ifdef TLF_FONTS
+    wc[0] = string[i];
+    wc[1] = 0;
+    size = wchar_to_utf8(wc,1,c,10,0);
+    if(size==1) {
+      if(c[0]==hardblank) {
+        c[0] = ' ';
+        }
+      }
+    c[size] = 0;
+    printf("%s",c);
+#else
     putchar(string[i]==hardblank?' ':string[i]);
+#endif
     }
   putchar('\n');
 }
@@ -1532,6 +1620,7 @@ void splitline()
   part1 = (inchr*)myalloc(sizeof(inchr)*(inchrlinelen+1));
   part2 = (inchr*)myalloc(sizeof(inchr)*(inchrlinelen+1));
   gotspace = 0;
+  lastspace = inchrlinelen-1;
   for (i=inchrlinelen-1;i>=0;i--) {
     if (!gotspace && inchrline[i]==' ') {
       gotspace = 1;
@@ -1605,7 +1694,7 @@ inchr c;
 int Agetchar()
 {
     extern int optind;		/* current argv[] element under study */
-    static AgetMode = 0;	/* >= 0 for displacement into argv[n], <0 EOF */
+    static int AgetMode = 0;	/* >= 0 for displacement into argv[n], <0 EOF */
     char   *arg;		/* pointer to active character */
     int    c;			/* current character */
 
@@ -1657,11 +1746,11 @@ inchr iso2022()
   if (ch == 27) ch = Agetchar() + 0x100; /* ESC x */
   if (ch == 0x100 + '$') ch = Agetchar() + 0x200; /* ESC $ x */
   switch (ch) {
-    case 14: /* invoke G0 into GL */
-      gl = 0;
-      return iso2022();
-    case 15: /* invoke G1 into GL */
+    case 14: /* invoke G1 into GL */
       gl = 1;
+      return iso2022();
+    case 15: /* invoke G0 into GL */
+      gl = 0;
       return iso2022();
     case 142: case 'N' + 0x100: /* invoke G2 into GL for next char */
       save_gl = gl; save_gr = gr;
@@ -1932,6 +2021,10 @@ char *argv[];
   wordbreakmode = 0;
   last_was_eol_flag = 0;
 
+#ifdef TLF_FONTS
+  toiletfont = 0;
+#endif
+
   while ((c = getinchr())!=EOF) {
 
     if (c=='\n'&&paragraphflag&&!last_was_eol_flag) {
@@ -1993,7 +2086,7 @@ char *argv[];
       else if (outlinelen==0) {
         for (i=0;i<charheight;i++) {
           if (right2left && outputwidth>1) {
-            putstring(currchar[i]+MYSTRLEN(currchar[i])-outlinelenlimit);
+            putstring(currchar[i]+STRLEN(currchar[i])-outlinelenlimit);
             }
           else {
             putstring(currchar[i]);
@@ -2029,5 +2122,5 @@ char *argv[];
   if (outlinelen!=0) {
     printline();
     }
-  exit(0);
+  return 0;
 }

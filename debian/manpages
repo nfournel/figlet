@@ -1,4 +1,4 @@
-debian/chkfont.6
+chkfont.6
 figlet.6
-debian/figlist.6
-debian/showfigfonts.6
+figlist.6
+showfigfonts.6
