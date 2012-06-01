@@ -1,5 +1,5 @@
-About FIGlet (Frank, Ian & Glenn's Letters) release 2.2.2, 05 July 2005
------------------------------------------------------------------------
+About FIGlet (Frank, Ian & Glenn's Letters) release 2.2.5, 31 May 2012
+--------------------------------------------------------------------------
 FIGlet is a program that creates large characters out of ordinary
 screen characters
  _ _ _          _   _     _       
@@ -28,6 +28,8 @@ zipio.h,     -- A package for reading ZIP archives
 zipio.c,
 inflate.c,
 crc.c
+utf8.h,      -- A package to convert strings between UTF-8 and UCS-4.
+utf8.c
 getopt.c     -- Source for the standard "getopt" routine, in case you
                 don't have it in your C library.  Not used by default.
 Makefile     -- The FIGlet makefile.  Used by the make command. 
@@ -90,12 +92,12 @@ you can probably still read it using
         nroff -man figlet.6 | more
 
 (2) Do a complete installation.  To do the this, set the variables
-DESTDIR and MANDIR in Makefile to the appropriate values.  DESTDIR
+BINDIR and MANDIR in Makefile to the appropriate values.  BINDIR
 should be the full pathname of the directory in which the executable
 files should be put (we recommend "/usr/games");  MANDIR should be the
 full pathname of the directory in which the figlet man page should be
 put, generally "/usr/man/man6".  Once DEFAULTFONTDIR, DEFAULTFONTFILE,
-DESTDIR and MANDIR have been set, in the directory containing the FIGlet
+BINDIR and MANDIR have been set, in the directory containing the FIGlet
 source, type "make install".
 
 If space is a problem, the only files you absolutely must have to run
@@ -152,7 +154,7 @@ you had said "figlet -f smslant" above, you would have seen
 Here are some other useful command line options:
 
 -c   center -- centers the output of FIGlet.
--k  tells FIGlet to kern characters without smushing them together.
+-k   tells FIGlet to kern characters without smushing them together.
 -t   terminal -- FIGlet asks your terminal how wide it is, and uses
      this to determine when to break lines.  Normally, FIGlet assumes
      80 columns so that people with wide terminals won't annoy the
@@ -235,5 +237,6 @@ FIGlet was written mostly by Glenn Chappell <c486scm@semovm.semo.edu>.  The
 author not being an e-mail fanatic, most correspondence (bug reports, rave
 reviews, etc.) used to be handled to his secretary (who is definitely
 an e-mail fanatic), Ian Chai <ianchai@usa.net> and has since moved on to 
-another FIGlet enthusiast, Christiaan Keet <info@figlet.org>
+another FIGlet enthusiast, Christiaan Keet <info@figlet.org>. Current
+maintenance is conducted by Claudio Matsuoka <cmatsuoka@gmail.com>.
 

@@ -1,3 +1,31 @@
+figlet (2.2.5-1) unstable; urgency=low
+
+  * New upstream release. (closes: #674844) (closes: #617422) (closes: #150174)
+    - figlet has been relicensed as BSD. All undistributable files have either
+      been relicenced, or replaced with properly licenced alternatives; figlet
+      can re-enter the archive, and can move back to main from non-free. \o/
+    - Drop 2.2.2-1 patches, applied upstream
+    - New upstream makefile does not support setting variables from
+      debian/rules; Added makefile_set_debian_{buildflags,paths}.patch
+      accordingly.
+  * Improve packaging
+    - Update S-V to 3.9.3
+    - Bump Debhelper to v9
+    - Switch to dpkg-source 3.0 (quilt) format
+    - Switch to dh-style debian/rules (closes: #672320)
+    - Various lintian fixes
+    - Update package description (closes: #557254)
+    - Update debian/copyright (closes: #436302)
+    - Fix moolets bashism (closes: #530082)
+    - Move figlet manpage to alternatives system (closes: #403665)
+    - Add watchfile
+    - Add Homepage to debian/control
+    - Remove references to deprecated figfonts(-cjk) packages
+    - Remove local copies of man pages (merged upstream)
+  * Add myself as co-maintainer
+
+ -- Jonathan McCrohan <jmccrohan@gmail.com>  Sat, 02 Jun 2012 00:35:22 +0100
+
 figlet (2.2.2-1) unstable; urgency=low
 
   * New upstream release.  (Closes: #388101)
