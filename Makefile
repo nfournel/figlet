@@ -19,10 +19,11 @@
 SHELL = /bin/sh
 
 # The C compiler and linker to use
+CPPFLAGS = $(shell dpkg-buildflags --get CPPFLAGS)
 CC	= gcc
-CFLAGS	= -g -O2 -Wall
+CFLAGS	= $(shell dpkg-buildflags --get CFLAGS)
 LD	= gcc
-LDFLAGS =
+LDFLAGS = $(shell dpkg-buildflags --get LDFLAGS)
 
 # Feature flags:
 #   define TLF_FONTS to use TOIlet TLF fonts
@@ -62,7 +63,7 @@ DFILES	= Makefile Makefile.tc $(MANUAL) $(OBJS:.o=.c) chkfont.c getopt.c \
 	  crc.h inflate.h zipio.h utf8.h run-tests.sh figmagic
 
 .c.o:
-	$(CC) -c $(CFLAGS) $(XCFLAGS) -DDEFAULTFONTDIR=\"$(DEFAULTFONTDIR)\" \
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(XCFLAGS) -DDEFAULTFONTDIR=\"$(DEFAULTFONTDIR)\" \
 		-DDEFAULTFONTFILE=\"$(DEFAULTFONTFILE)\" -o $*.o $<
 
 all: $(BINS)
