@@ -5,6 +5,8 @@ Section: text
 Priority: optional
 Standards-Version: 3.9.3
 Build-Depends: debhelper (>= 9)
+Vcs-Git: git://git.debian.org/git/collab-maint/figlet.git
+Vcs-Browser: http://git.debian.org/?p=collab-maint/figlet.git
 Homepage: http://www.figlet.org/
 
 Package: figlet

@@ -1,3 +1,14 @@
+figlet (2.2.5-2) unstable; urgency=low
+
+  * Import packaging git repo to collab-maint
+    - Add VCS-{Git,Browser} URLs
+  * debian/copyright: Update WTFPL v2 license text (closes: #694380)
+  * debian/copyright: Update Unicode license text (closes: #694270)
+  * debian/clean: Remove tests.log which caused FTBFS if built twice in a row
+    - Thanks to Roland Stigge <stigge@antcom.de> for the patch
+
+ -- Jonathan McCrohan <jmccrohan@gmail.com>  Sun, 25 Nov 2012 23:59:03 +0000
+
 figlet (2.2.5-1) unstable; urgency=low
 
   * New upstream release. (closes: #674844) (closes: #617422) (closes: #150174)
