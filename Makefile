@@ -22,7 +22,7 @@ SHELL = /bin/sh
 CPPFLAGS = $(shell dpkg-buildflags --get CPPFLAGS)
 CC	= gcc
 CFLAGS	= $(shell dpkg-buildflags --get CFLAGS)
-LD	= gcc
+LD	= $(CC)
 LDFLAGS = $(shell dpkg-buildflags --get LDFLAGS)
 
 # Feature flags:
