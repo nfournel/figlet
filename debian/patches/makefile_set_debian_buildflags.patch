@@ -12,7 +12,8 @@ Date: Mon, 28 May 2012 00:37:27 +0100
  CC	= gcc
 -CFLAGS	= -g -O2 -Wall
 +CFLAGS	= $(shell dpkg-buildflags --get CFLAGS)
- LD	= gcc
+-LD	= gcc
++LD	= $(CC)
 -LDFLAGS =
 +LDFLAGS = $(shell dpkg-buildflags --get LDFLAGS)
  

@@ -1,3 +1,21 @@
+figlet (2.2.5-3) unstable; urgency=low
+
+  * Update S-V to 4.0.0
+    - No changes necessary
+  * debian/{control,copyright}: various fixes found by
+    libconfig-model-dpkg-perl
+  * debian/patches: Fix FTCBFS by defaulting LD to $(CC) (closes: #852785)
+    - Thanks to Helmut Grohne <helmut@subdivi.de> for the patch
+  * debian/figlet.el: apply multiple patches from Kevin Ryde
+    <user42_kevin@yahoo.com.au> (closes: #807293, #807296, #807295)
+  * debian/rules: add hardening=+all to DEB_BUILD_MAINT_OPTIONS
+  * debian/control: minor fixes to package description; s/figlet/FIGlet/g 
+  * Install figlet.el emacs file using dh_installemacsen (closes: #807297)
+  * debian/rules: clean up rules + split into multiple .debhelper files 
+  * Add DEP-8 (autopkgtest) support for upstream test suite 
+
+ -- Jonathan McCrohan <jmccrohan@gmail.com>  Thu, 22 Jun 2017 22:31:46 +0100
+
 figlet (2.2.5-2) unstable; urgency=low
 
   * Import packaging git repo to collab-maint

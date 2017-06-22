@@ -39,12 +39,18 @@
 
 (defun figlet-message ()
   "Inserts large message of text in ASCII font into current buffer"
-  (interactive)
+  (interactive "*")
   (setq str (read-from-minibuffer "Enter message: "))
   (setq font
         (completing-read "Which font: " fig-font-list nil t))
-  (call-process "figlet" nil t t "-f" font fig-options str)
+  ;; If the user enters nothing then font is empty string "".
+  ;; Omit the -f option in that case, giving figlet's default font.
+  (let ((args (append (and (not (equal font "")) (list "-f" font))
+                      (list fig-options str))))
+    (apply 'call-process "figlet" nil t t args))
   (message "Done printing"))
 
 
 (setq max-lisp-eval-depth save-eval-depth)
+
+(provide 'figlet)
