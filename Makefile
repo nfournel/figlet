@@ -30,13 +30,13 @@ LDFLAGS = $(shell dpkg-buildflags --get LDFLAGS)
 XCFLAGS	= -DTLF_FONTS
 
 # Where to install files
-prefix	= /usr/local
+prefix	= /usr
 
 # Where the executables should be put
 BINDIR	= $(prefix)/bin
 
 # Where the man page should be put
-MANDIR	= $(prefix)/man
+MANDIR	= $(prefix)/share/man
 
 # Where figlet will search first for fonts (the ".flf" files).
 DEFAULTFONTDIR = $(prefix)/share/figlet
