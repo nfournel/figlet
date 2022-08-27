@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#ifdef __STDC__
+#include <stdlib.h>
+#endif
 
 #define DATE "20 Feb 1996"
 #define VERSION "2.2"
@@ -68,10 +71,9 @@ char *ptr;
 ptr=(char *)malloc(size);
 if (ptr==NULL) {
   fprintf(stderr,"%s: Out of memory\n",myname);
+  exit(1);
   }
-else {
-  return(ptr);
-  }
+return(ptr);
 }
 
 int badsuffix(path,suffix)
@@ -103,15 +105,22 @@ fprintf(stderr,"Usage: %s fontfile ...\n",myname);
 exit(1);
 }
 
-
 void readchar()
 {
 int i,expected_width,k,len,newlen,diff,l;
 char endmark,expected_endmark;
 int leadblanks,minleadblanks,trailblanks,mintrailblanks;
+char *ret;
 
+expected_width = expected_endmark = 0;	/* prevent compiler warning */
 for (i=0;i<charheight;i++) {
-  fgets(fileline,maxlen+1000,fontfile);
+  ret = fgets(fileline,maxlen+1000,fontfile);
+  if (ret == NULL) {
+    printf("%s: ERROR (fatal)- Unexpected read error after line %d.\n",
+      fontfilename,currline);
+    ec++;
+    weregone(1); if (gone) return;
+    }
   if (feof(fontfile)) {
     printf("%s: ERROR (fatal)- Unexpected end of file after line %d.\n",
       fontfilename,currline);
@@ -235,7 +244,12 @@ if (fontfile!=stdin) {
     weregone(0); if (gone) return;
     }
   }
-fscanf(fontfile,"%4s",magicnum);
+numsread=fscanf(fontfile,"%4s",magicnum);
+if (numsread == EOF) {
+  printf("%s: ERROR- can't read magic number.\n",fontfilename);
+  ec++;
+  weregone(0); if (gone) return;
+  }
 if (strcmp(magicnum,FONTFILEMAGICNUMBER)) {
   printf("%s: ERROR- Incorrect magic number.\n",fontfilename);
   ec++;
@@ -258,6 +272,7 @@ numsread=sscanf(fileline,"%c %d %d %d %d %d %d %d %d",
   &hardblank,&charheight,&upheight,&maxlen,&old_layout,&cmtcount,
   &ffrighttoleft,&layout,&spectagcnt);
 free(fileline);
+fileline = NULL;
 if (numsread<7) {
   ffrighttoleft=0;
   }
@@ -457,5 +472,5 @@ for (arg=1;arg<argc;arg++) {
   checkit();
   if (fileline!=NULL) free(fileline);
   }
-exit(0);
+return 0;
 }
