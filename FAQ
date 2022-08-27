@@ -2,10 +2,10 @@
 |   __|     |   __|  |____|  |_    |   __|  _  |     | This FIGlet FAQ is 
 |   __|-   -|  |  |  | - _|   _|   |   __|     |  |  | posted once a month
 |__|  |_____|_____|__|____|__|     |__|  |__|__|__  _| on figlet@figlet.org
-  info@figlet.org        http://www.figlet.org/   |__|    [FIGlet FAQ v0.9]
+  info@figlet.org        http://www.figlet.org/   |__|   [FIGlet FAQ v0.92]
 
 ===========================================================================
-The latest version of FIGlet is 2.2.1 and can be downloaded from
+The latest version of FIGlet is 2.2.2 and can be downloaded from
 ftp://ftp.figlet.org/pub/figlet/program
 ===========================================================================
 
@@ -40,17 +40,9 @@ ftp://ftp.figlet.org/pub/figlet/program
 
                     
 4  Where can I hear about regular FIGlet program and font updates?
-    There are 3 mailing lists available for FIGlet
-        figlet@figlet.org             General discussion of FIGlet
-        figletfonts@figlet.org        Announcements about fonts 
-        figletsoftware@figlet.org     Announcements about software 
-        (The last two lists are moderated)
-
-    To subscribe or unsubscribe from the FIGlet mailing lists, please visit 
-    the corresponding URL:
-        http://www.figlet.org/mailman/listinfo/figlet 
-        http://www.figlet.org/mailman/listinfo/figletfonts 
-        http://www.figlet.org/mailman/listinfo/figletsoftware 
+    There is a mailing list available for FIGlet.  To subscribe 
+    or unsubscribe from the FIGlet mailing list, please visit 
+    http://www.figlet.org/mailman/listinfo/figlet 
 
 
 5.  How can I contribute?
@@ -69,5 +61,5 @@ ftp://ftp.figlet.org/pub/figlet/program
 
 
 = FAQ Maintainer ==========================================================
-Christiaan Keet                keet@plig.net                   13 July 2002
+Christiaan Keet                keet@plig.net                   05 July 2005
 ===========================================================================

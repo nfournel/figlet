@@ -6,13 +6,13 @@
   Portions written by Paul Burton and Christiaan Keet
   Internet: <info@figlet.org>
   FIGlet, along with the various FIGlet fonts and documentation, is
-    copyrighted under the provisions of the Artistic License (as listed
-    in the file "Artistic-license.txt" which is included in this package.
+    copyrighted under the provisions of the Academic Free License 
+    (as listed in the file "LICENSE" which is included in this package)
 ****************************************************************************/
 
-#define DATE "13 July 2002"
-#define VERSION "2.2.1"
-#define VERSION_INT 20201
+#define DATE "05 July 2005"
+#define VERSION "2.2.2"
+#define VERSION_INT 20202
 
 /* FIGlet (Frank, Ian & Glenn's Letters) */
 /* by Glenn Chappell */
@@ -34,6 +34,8 @@
 /* Release 2.2.1 by Christiaan Keet: minor updates including readmes
    FAQs and comments. 13 July 2002. The new official FIGlet website is 
    http://www.figlet.org/  */
+/* Release 2.2.2 by Christiaan Keet: License changed from "Artistic License"
+   to "Academic Free License" as agreed by FIGlet authors. 05 July 2005 */
 
 /*---------------------------------------------------------------------------
   DEFAULTFONTDIR and DEFAULTFONTFILE should be defined in the Makefile.
