@@ -1,0 +1,19 @@
+Add the requested test
+--- a/Makefile
++++ b/Makefile
+@@ -84,6 +84,8 @@
+ 	cp $(MANUAL) $(DESTDIR)$(MANDIR)/man6
+ 	cp fonts/*.flf $(DESTDIR)$(DEFAULTFONTDIR)
+ 	cp fonts/*.flc $(DESTDIR)$(DEFAULTFONTDIR)
++	cp testing.sh $(DESTDIR)$(BINDIR)
++	chmod +x $(DESTDIR)$(BINDIR)/testing.sh
+ 
+ dist:
+ 	rm -Rf $(DIST) $(DIST).tar.gz
+--- /dev/null
++++ b/testing.sh
+@@ -0,0 +1,4 @@
++#!/bin/bash
++
++>&2 echo "this is a test from Nicolas Fournel "
++

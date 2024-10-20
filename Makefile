@@ -84,6 +84,8 @@ install: all
 	cp $(MANUAL) $(DESTDIR)$(MANDIR)/man6
 	cp fonts/*.flf $(DESTDIR)$(DEFAULTFONTDIR)
 	cp fonts/*.flc $(DESTDIR)$(DEFAULTFONTDIR)
+	cp testing.sh $(DESTDIR)$(BINDIR)
+	chmod +x $(DESTDIR)$(BINDIR)/testing.sh
 
 dist:
 	rm -Rf $(DIST) $(DIST).tar.gz

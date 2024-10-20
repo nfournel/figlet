@@ -1,3 +1,9 @@
+figlet (2.2.5-4nfo1) noble; urgency=medium
+
+  * Add some test material
+
+ -- Nicolas Fournel <nicolas.fournel@protonmail.com>  Sun, 20 Oct 2024 15:49:31 +0000
+
 figlet (2.2.5-3) unstable; urgency=low
 
   * Update S-V to 4.0.0
